@@ -1,12 +1,12 @@
 {
   "name": "@mmui/mm-price",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "价格显示 - 小程序组件",
   "main": "dist/index.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/meili/minui/tree/master/packages/mm-price"
+    "url": "https://github.com/qianzhaoy/mmui/tree/master/packages/mm-price"
   },
   "author": "",
   "license": "MIT",
