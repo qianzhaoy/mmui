@@ -100,7 +100,7 @@
 
             // 小数部分缩小
             case 'small': {
-              value = parseInt(value).toString().trim();
+              value = value.toString().split('.')[0].toString().trim();
               this.setData({
                 decimalNum: (value.toString().split('.')[1] || '00').trim()
               });
