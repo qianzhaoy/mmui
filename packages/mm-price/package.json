@@ -1,6 +1,6 @@
 {
   "name": "@mmui/mm-price",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "价格显示 - 小程序组件",
   "main": "dist/index.js",
   "scripts": {},
