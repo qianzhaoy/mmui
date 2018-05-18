@@ -1,0 +1,19 @@
+<template>
+  <mm-price value="1212"></mm-price>
+  <mm-price value="1212" decimal="small"></mm-price>
+</template>
+
+<script>
+export default {
+  config: {
+    usingComponents: {
+      'mm-price': 'mm-price'
+    }
+  },
+  data: { },
+  methods: { }
+}
+</script>
+
+<style>
+</style>
