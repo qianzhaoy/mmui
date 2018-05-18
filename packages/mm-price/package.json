@@ -1,5 +1,5 @@
 {
-  "name": "@qzy-ui/mm-price",
+  "name": "@qianzhaoy/mm-price",
   "version": "1.0.7",
   "description": "价格显示 - 小程序组件",
   "main": "dist/index.js",
