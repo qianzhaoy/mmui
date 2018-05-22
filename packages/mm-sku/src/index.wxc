@@ -131,15 +131,15 @@ export default {
     },
 
     show: function() {
-      this.selectComponent('.popup').show()
+      this.selectComponent('.popup').show();
     },
 
     hide: function() {
-      this.selectComponent('.popup').hide()
+      this.selectComponent('.popup').hide();
     },
 
     resetSelect() {
-      this.setItemsDisable()
+      this.setItemsDisable();
       this.setData({
         imgUrl: this.data.goods.pic_url || '',
         stock: this.data.sku.stock_num || 0,
@@ -147,7 +147,7 @@ export default {
         selectedSkuComb: null,
         price: this.data.sku.price || '',
         limitQuota: this.getSelectLimit(this.data.sku.stock_num)
-      })
+      });
     },
 
     getImgUrl: function(s1Id) {
@@ -173,31 +173,31 @@ export default {
     onSelect: function(e) {
       if (!e.target.dataset.ischooseable) return;
 
-      var dataSet = e.target.dataset
-      var skuid = dataSet.skuid
-      var keystr = dataSet.keystr
-      var isClickActive = this.data.selectedSku[keystr] === skuid
-      var data = {}
+      var dataSet = e.target.dataset;
+      var skuid = dataSet.skuid;
+      var keystr = dataSet.keystr;
+      var isClickActive = this.data.selectedSku[keystr] === skuid;
+      var data = {};
 
       // 设置sku选中/取消项
-      data.selectedSku = this.getSelectValue(skuid, keystr, isClickActive)
-      data.selectedSkuComb = this.getSelectSkuComb(data.selectedSku)
-      data.price = this.getPrice(data.selectedSkuComb)
-      data.stock = this.getStock(data.selectedSkuComb)
-      data.limitQuota = this.getSelectLimit(data.stock)
+      data.selectedSku = this.getSelectValue(skuid, keystr, isClickActive);
+      data.selectedSkuComb = this.getSelectSkuComb(data.selectedSku);
+      data.price = this.getPrice(data.selectedSkuComb);
+      data.stock = this.getStock(data.selectedSkuComb);
+      data.limitQuota = this.getSelectLimit(data.stock);
       
       // 如果当前的购买数量大于剩余库存
       if (this.data.selectedNum > data.limitQuota) {
-        data.selectedNum = data.limitQuota
+        data.selectedNum = data.limitQuota;
       }
 
-      this.setItemsDisable(data.selectedSku)
+      this.setItemsDisable(data.selectedSku);
 
       // 设置sku图片
       if (keystr === 's1') {
-          data.imgUrl = isClickActive ? this.data.goods.pic_url : this.getImgUrl(skuid)
+          data.imgUrl = isClickActive ? this.data.goods.pic_url : this.getImgUrl(skuid);
       }
-      this.setData(data)
+      this.setData(data);
     },
 
     setItemsDisable: function(selectedSku) {
@@ -211,13 +211,13 @@ export default {
           var isChooseable = _self.isSkuChoosable(_self.data.sku.list, selectedSku, {
             key: treeItem.k_s,
             valueId: skuvalue.id
-          })
-          itemsDisabled[skuvalue.id] = isChooseable
-        })
-      })
+          });
+          itemsDisabled[skuvalue.id] = isChooseable;
+        });
+      });
       _self.setData({
         itemsDisabled: itemsDisabled
-      })
+      });
     },
 
     getSelectSkuComb: function(selectedSku) {
@@ -239,7 +239,7 @@ export default {
     isSkuCombSelected: function(selectedSku) {
       var selected = Object.keys(selectedSku).filter(function(skuKeyStr) {
         return selectedSku[skuKeyStr] !== ''
-      })
+      });
       return this.data.sku.tree.length === selected.length;
     },
 
@@ -268,17 +268,17 @@ export default {
     },
 
     getSelectValue: function(id, keystr, isClickActive) {
-      var result = {}
-      result[keystr] = isClickActive ? '' : id
+      var result = {};
+      result[keystr] = isClickActive ? '' : id;
 
       // 设置选中或取消
-      return Object.assign({}, this.data.selectedSku, result)
+      return Object.assign({}, this.data.selectedSku, result);
     },
 
     onNumChange(e) {
       this.setData({
         selectedNum: e.detail.number
-      })
+      });
     },
 
     isSkuChoosable: function(skuList, selectedSku, skuToChoose) {
@@ -290,7 +290,7 @@ export default {
       var matchedSku = Object.assign({}, selectedSku, selectData);
       // 再判断剩余sku是否全部不可选，若不可选则当前sku不可选中
       var skusToCheck = Object.keys(matchedSku).filter(function(skuKey) {
-        return matchedSku[skuKey] !== ''
+        return matchedSku[skuKey] !== '';
       });
       var filteredSku = skuList.filter(function(sku){
         return skusToCheck.every(function(skuKey) {
@@ -299,7 +299,7 @@ export default {
       });
 
       var stock = filteredSku.reduce(function(total, sku) {
-        return total += sku.stock_num
+        return total += sku.stock_num;
       }, 0);
 
       return stock > 0;
@@ -309,7 +309,7 @@ export default {
       var quotaLimit = this.data.quota - this.data.quotaUsed;
       var limit;
 
-      stock = typeof stock === 'undefined' ? 0 : stock
+      stock = typeof stock === 'undefined' ? 0 : stock;
 
       // 无限购时直接取库存，有限购时取限购数和库存数中小的那个
       if (this.data.quota > 0 && quotaLimit <= stock) {
