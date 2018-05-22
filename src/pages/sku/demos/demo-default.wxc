@@ -1,0 +1,64 @@
+<template>
+  <view>
+    <button bind:tap="showSku">打开SKU弹窗</button>
+    <mm-sku 
+      class="sku"
+      sku="{{ sku }}"
+      goods="{{ goods }}"
+      quota="{{ quota }}"
+      quota-used="{{ quotaUsed }}"
+      buyText="确定"
+      bind:buy-clicked="onBuyClicked"
+      bind:addCart="onBuyClicked"
+      bind:error="showToast"
+    ></mm-sku>
+  </view>
+</template>
+
+<script>
+import skuData from "./sku.js";
+
+export default { 
+  config: {
+    usingComponents: {
+      'mm-sku': 'mm-sku'
+    }
+  },
+  data: {
+    sku: {},
+    goods: {},
+    quota: 0,
+    quotaUsed: 0
+  },
+
+  attached: function(){
+    var self = this;
+    setTimeout(function() {
+      self.setData({
+        sku: skuData.sku,
+        goods: skuData.goods_info,
+        quota: skuData.quota,
+        quotaUsed: skuData.quota_used
+      })
+    }, 1000);
+  },
+
+  methods: {
+    showToast: function(e) {
+      wx.showToast({
+        icon: 'none',
+        title: e.detail
+      })
+    },
+    showSku: function() {
+      this.selectComponent('.sku').show()
+    },
+    onBuyClicked(skuCombe) {
+      console.log(skuCombe);
+    }
+  }
+}
+</script>
+
+<style>
+</style>

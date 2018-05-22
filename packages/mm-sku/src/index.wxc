@@ -1,0 +1,488 @@
+<template>
+  <wxc-popup class="popup" animation-mode="bottom" align="bottom" locked="{{ true }}">
+      <view class="sku">
+        <view class="sku__header hairline-bottom">
+          <view class="sku__header-img">
+            <image src="{{ imgUrl }}" mode="aspectFit"></image>
+          </view> 
+          <view class="sku__header-info">
+            <view>{{ goods.title }}</view>
+            <view class="sku__header-price">￥{{ price }}</view>
+          </view>
+          <wxc-icon class="sku__header-close" type="no" size="40" bind:tap="hide"></wxc-icon>
+        </view>
+
+        <view class="sku__body">
+          <view class="sku__select">
+            <view 
+              class="sku-row"
+              wx:for="{{ sku.tree }}" 
+              wx:key="{{ index }}">
+              <view class="sku-row__title">{{ item.k }}</view>
+              <view 
+                class="sku-row__item {{ selectedSku[item.k_s] === sku.id ? 'sku-row__item--active' : '' }} {{ !itemsDisabled[sku.id] && 'sku-row__item--disabled' }}" 
+                wx:for="{{ item.v }}" 
+                wx:key="{{ sku.id }}"  
+                wx:for-item="sku"
+                data-skuid="{{ sku.id }}"
+                data-ischooseable="{{ itemsDisabled[sku.id] }}"
+                data-keystr="{{ item.k_s }}"
+                bind:tap="onSelect"
+              >{{ sku.name }}</view>
+            </view>
+          </view>
+          <view class="sku__stepper-stock">
+            <view class="sku-stepper-container">
+              <view>购买数量：</view>
+              <wxc-counter 
+                number="{{ selectedNum }}" 
+                bind:changenumber="onNumChange"
+                min="1"
+                max="{{ limitQuota }}"
+              ></wxc-counter>
+            </view>
+            <text class="sku__stock">剩余{{ stock }}件</text>
+            <text class="sku__quota" wx:if="{{ quota > 0 }}">每人限购{{ limitQuota }}件</text>
+          </view>
+        </view>
+
+        <view class="sku__actions">
+          <button 
+            class="sku__add-cart" 
+            wx:if="{{ showAddCartBtn }}" 
+            hover-class="sku__actions--active"
+            bind:tap="addCart"
+          >加入购物车</button>
+
+          <button 
+            class="sku__buy" 
+            type="warn" 
+            hover-class="sku__actions--active"
+            bind:tap="buy"
+          >{{ buyText || '立即购买'}}</button>
+        </view>
+      </view>
+  </wxc-popup>
+</template>
+
+<script>
+export default {
+  config: {
+    usingComponents: {
+      'wxc-counter': '@minui/wxc-counter',
+      'wxc-popup': '@minui/wxc-popup',
+      'wxc-icon': '@minui/wxc-icon'
+    }
+  },
+
+  properties: {
+    sku: {
+      type: Object,
+      observer: 'resetSelect'
+    },
+    goodsId: null,
+    goods: Object,
+    quota: {
+      type: Number,
+      value: 0
+    },
+    quotaUsed: {
+      type: Number,
+      value: 0
+    },
+    showAddCartBtn: {
+      type: Boolean,
+      value: true
+    },
+    buyText: String
+  },
+
+  data: {
+    imgUrl: '',
+    selectedSku: {},
+    selectedNum: 1,
+    selectedSkuComb: null,
+    stock: 0,
+    price: '',
+    itemsDisabled: {},
+    limitQuota: 0
+  },
+
+  attached() {
+    this.resetSelect()
+  },
+
+  methods: {
+    addCart: function() {
+      this.onBuyOrAddCart('add-cart');
+    },
+
+    buy: function() {
+      this.onBuyOrAddCart('buy-clicked');
+    },
+
+    onBuyOrAddCart(type) {
+      const error = this.validateSku();
+      if (error) {
+        this.triggerEvent('error', error);
+      } else {
+        this.triggerEvent(type, this.getSkuData());
+      }
+    },
+
+    show: function() {
+      this.selectComponent('.popup').show()
+    },
+
+    hide: function() {
+      this.selectComponent('.popup').hide()
+    },
+
+    resetSelect() {
+      this.setItemsDisable()
+      this.setData({
+        imgUrl: this.data.goods.pic_url || '',
+        stock: this.data.sku.stock_num || 0,
+        selectedSku: {},
+        selectedSkuComb: null,
+        price: this.data.sku.price || '',
+        limitQuota: this.getSelectLimit(this.data.sku.stock_num)
+      })
+    },
+
+    getImgUrl: function(s1Id) {
+      if (!s1Id) return;
+
+      var treeItem = this.data.sku.tree.find(function(treeItem) {
+        return treeItem.k_s === 's1';
+      }) || {}
+
+      if (!treeItem.v) {
+        return;
+      }
+
+      var matchedSku = treeItem.v.find(function(skuValue) {
+        return skuValue.id === s1Id;
+      })
+
+      if (matchedSku && matchedSku.imgUrl) {
+        return matchedSku.imgUrl;
+      }
+    },
+
+    onSelect: function(e) {
+      if (!e.target.dataset.ischooseable) return;
+
+      var dataSet = e.target.dataset
+      var skuid = dataSet.skuid
+      var keystr = dataSet.keystr
+      var isClickActive = this.data.selectedSku[keystr] === skuid
+      var data = {}
+
+      // 设置sku选中/取消项
+      data.selectedSku = this.getSelectValue(skuid, keystr, isClickActive)
+      data.selectedSkuComb = this.getSelectSkuComb(data.selectedSku)
+      data.price = this.getPrice(data.selectedSkuComb)
+      data.stock = this.getStock(data.selectedSkuComb)
+      data.limitQuota = this.getSelectLimit(data.stock)
+      
+      // 如果当前的购买数量大于剩余库存
+      if (this.data.selectedNum > data.limitQuota) {
+        data.selectedNum = data.limitQuota
+      }
+
+      this.setItemsDisable(data.selectedSku)
+
+      // 设置sku图片
+      if (keystr === 's1') {
+          data.imgUrl = isClickActive ? this.data.goods.pic_url : this.getImgUrl(skuid)
+      }
+      this.setData(data)
+    },
+
+    setItemsDisable: function(selectedSku) {
+      var itemsDisabled = {};
+      var _self = this;
+
+      selectedSku = selectedSku || {};
+
+      _self.data.sku.tree && _self.data.sku.tree.forEach(function(treeItem) {
+        treeItem.v.forEach(function(skuvalue) {
+          var isChooseable = _self.isSkuChoosable(_self.data.sku.list, selectedSku, {
+            key: treeItem.k_s,
+            valueId: skuvalue.id
+          })
+          itemsDisabled[skuvalue.id] = isChooseable
+        })
+      })
+      _self.setData({
+        itemsDisabled: itemsDisabled
+      })
+    },
+
+    getSelectSkuComb: function(selectedSku) {
+      var sku = this.data.sku;
+      if (sku.none_sku) {
+        return {
+          id: sku.collection_id || '',
+          price: Math.round(sku.price * 100),
+          stock_num: sku.stock_num
+        };
+      } else {
+        if (this.isSkuCombSelected(selectedSku)) {
+          return this.getSkuComb(sku.list, selectedSku);
+        }
+      }
+      return null;
+    },
+
+    isSkuCombSelected: function(selectedSku) {
+      var selected = Object.keys(selectedSku).filter(function(skuKeyStr) {
+        return selectedSku[skuKeyStr] !== ''
+      })
+      return this.data.sku.tree.length === selected.length;
+    },
+
+    getPrice: function(skuComb) {
+      if (skuComb) {
+        return (skuComb.price / 100).toFixed(2);
+      }
+      // sku.price是一个格式化好的价格区间
+      return this.data.sku.price;
+    },
+
+    getStock: function(skuComb) {
+      if (skuComb) {
+        return skuComb.stock_num;
+      }
+      return this.data.sku.stock_num;
+    },
+
+    getSkuComb: function(skuList, selectedSku) {
+      var skuComb = skuList.filter(function(skuComb){
+        return Object.keys(selectedSku).every(function(skuKeyStr) {
+          return String(skuComb[skuKeyStr]) === String(selectedSku[skuKeyStr]);
+        });
+      });
+      return skuComb[0];
+    },
+
+    getSelectValue: function(id, keystr, isClickActive) {
+      var result = {}
+      result[keystr] = isClickActive ? '' : id
+
+      // 设置选中或取消
+      return Object.assign({}, this.data.selectedSku, result)
+    },
+
+    onNumChange(e) {
+      this.setData({
+        selectedNum: e.detail.number
+      })
+    },
+
+    isSkuChoosable: function(skuList, selectedSku, skuToChoose) {
+      var key = skuToChoose.key;
+      var valueId = skuToChoose.valueId;
+      // 先假设sku已选中，拼入已选中sku对象中
+      var selectData = {};
+      selectData[key] = valueId;
+      var matchedSku = Object.assign({}, selectedSku, selectData);
+      // 再判断剩余sku是否全部不可选，若不可选则当前sku不可选中
+      var skusToCheck = Object.keys(matchedSku).filter(function(skuKey) {
+        return matchedSku[skuKey] !== ''
+      });
+      var filteredSku = skuList.filter(function(sku){
+        return skusToCheck.every(function(skuKey) {
+          return String(matchedSku[skuKey]) === String(sku[skuKey]);
+        });
+      });
+
+      var stock = filteredSku.reduce(function(total, sku) {
+        return total += sku.stock_num
+      }, 0);
+
+      return stock > 0;
+    },
+
+    getSelectLimit(stock) {
+      var quotaLimit = this.data.quota - this.data.quotaUsed;
+      var limit;
+
+      stock = typeof stock === 'undefined' ? 0 : stock
+
+      // 无限购时直接取库存，有限购时取限购数和库存数中小的那个
+      if (this.data.quota > 0 && quotaLimit <= stock) {
+        // 修正负的limit
+        limit = quotaLimit < 0 ? 0 : quotaLimit;
+      } else {
+        limit = stock;
+      }
+
+      return limit;
+    },
+
+    getSkuData() {
+      return {
+        goodsId: this.data.goodsId,
+        selectedNum: this.data.selectedNum,
+        selectedSkuComb: this.data.selectedSkuComb
+      };
+    },
+
+    validateSku: function() {
+      if (this.data.selectedNum === 0) {
+        return '商品已经无法购买啦';
+      }
+
+      if (!this.isSkuCombSelected(this.data.selectedSku)) {
+        return '请选择完整规格';
+      }
+ 
+      return '';
+    }
+  }
+
+}
+
+
+</script>
+
+<style>
+.sku {
+  width: 100%;
+  background-color: #fff;
+  font-size: 28rpx;
+}
+
+.hairline-bottom::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  transform: scale(.5);
+  transform-origin: 0 0;
+  pointer-events: none;
+  box-sizing: border-box;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+/* sku 头部信息 */
+.sku__header {
+  position: relative;
+  display: flex;
+  padding-left: 30rpx;
+}
+
+.sku__header-img {
+  position: relative;
+  top: -20rpx;
+  width: 160rpx;
+  height: 160rpx;
+  background-color: #f8f8f8;
+  border-radius: 4rpx;
+}
+
+.sku__header-info {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 14rpx 100rpx 14rpx 20rpx;
+}
+
+.sku__header-price {
+  color: #f44;
+}
+
+.sku__header-close {
+  position: absolute;
+  right: 10rpx;
+  top: 10rpx;
+}
+
+/* sku内容 */
+.sku__body {
+  padding-left: 30rpx;
+  max-height: 600rpx;
+  overflow-y: scroll;
+}
+
+.sku__select {
+  padding-top: 26rpx;
+}
+
+.sku-row__title {
+  padding-bottom: 20rpx;
+}
+
+.sku-row__item {
+  display: inline-block;
+  margin: 0 20rpx 20rpx 0;
+  padding: 10rpx 18rpx;
+  border: 1px solid #000;
+  border-radius: 8rpx;
+  min-width: 100rpx;
+  text-align: center;
+}
+
+.sku-row__item--active {
+  color: #fff;
+  border-color: #f44;
+  background-color: #f44;
+}
+
+.sku-row__item--disabled {
+    background: #e8e8e8;
+    border-color: #e5e5e5;
+    color: #c9c9c9;
+}
+
+.sku__stepper-stock {
+  padding: 20rpx 0;
+  padding-right: 20rpx;
+}
+
+.sku-stepper-container {
+  display: flex;
+  justify-content: space-between;
+  line-height: 60rpx;
+}
+
+.sku__stock {
+  margin-right: 20rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.sku__quota {
+  font-size: 24rpx;
+  color: #f44;
+}
+
+/* 按钮 */
+.sku__actions {
+  display: flex;
+}
+
+.sku__buy {
+  flex: 1;
+  border-radius: 0;
+}
+
+.sku__add-cart {
+  flex: 1;
+  border-radius: 0;
+  background-color: #f85;
+  color: #fff;
+}
+
+.sku__actions--active {
+  opacity: .5;
+}
+
+image {
+  width: 100%;
+  height: 100%;
+}
+</style>

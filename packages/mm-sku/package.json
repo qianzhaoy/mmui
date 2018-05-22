@@ -1,0 +1,21 @@
+{
+  "name": "@qianzhaoy/mm-sku",
+  "version": "1.0.0",
+  "description": "SKU选择器 - 小程序组件",
+  "main": "dist/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qianzhaoy/mmui/tree/master/packages/mm-sku"
+  },
+  "author": "钱招严",
+  "license": "MIT",
+  "dependencies": {
+    "@minui/wxc-counter": "^1.0.6",
+    "@minui/wxc-icon": "^1.0.9",
+    "@minui/wxc-popup": "1.0.9"
+  },
+  "minConfig": {
+    "component": true
+  }
+}
