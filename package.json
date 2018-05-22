@@ -9,10 +9,13 @@
   "author": "qianzhaoy",
   "license": "MIT",
   "dependencies": {
+    "@minui/wxc-counter": "^1.0.6",
     "@minui/wxc-example": "^1.0.0",
     "@minui/wxc-example-demo": "^1.0.0",
     "@minui/wxc-example-md": "^1.0.0",
-    "@minui/wxc-example-menu": "^1.0.0"
+    "@minui/wxc-example-menu": "^1.0.0",
+    "@minui/wxc-icon": "^1.0.9",
+    "@minui/wxc-popup": "^1.0.9"
   },
   "devDependencies": {
     "babel-plugin-syntax-export-extensions": "^6.13.0",
