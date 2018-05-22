@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/qianzhaoy/mmui/tree/master/packages/mm-sku"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "qianzhaoy",
   "license": "MIT",
   "dependencies": {
