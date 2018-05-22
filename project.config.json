@@ -4,7 +4,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "1.9.1",
 	"appid": "wx26d77f3df40d952b",
-	"projectname": "Mm-ui",
+	"projectname": "Mmui",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,
@@ -12,5 +12,31 @@
 		"minified": true,
 		"newFeature": true
 	},
-	"condition": {}
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": -1,
+					"name": "sku组件",
+					"pathName": "pages/sku/index"
+				}
+			]
+		}
+	}
 }
