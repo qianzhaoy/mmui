@@ -108,8 +108,8 @@ export default {
     limitQuota: 0
   },
 
-  attached() {
-    this.resetSelect()
+  ready() {
+    this.resetSelect();
   },
 
   methods: {
