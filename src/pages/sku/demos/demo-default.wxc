@@ -8,8 +8,8 @@
       quota="{{ quota }}"
       quota-used="{{ quotaUsed }}"
       buyText="确定"
-      bind:buy-clicked="onBuyClicked"
-      bind:addCart="onBuyClicked"
+      bind:buyclicked="onBuyClicked"
+      bind:addcart="onBuyClicked"
       bind:error="showToast"
     ></mm-sku>
   </view>

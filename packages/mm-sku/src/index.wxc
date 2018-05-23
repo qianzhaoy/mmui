@@ -114,11 +114,11 @@ export default {
 
   methods: {
     addCart: function() {
-      this.onBuyOrAddCart('add-cart');
+      this.onBuyOrAddCart('addcart');
     },
 
     buy: function() {
-      this.onBuyOrAddCart('buy-clicked');
+      this.onBuyOrAddCart('buyclicked');
     },
 
     onBuyOrAddCart(type) {
