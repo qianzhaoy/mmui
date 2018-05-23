@@ -6,7 +6,7 @@
             <image src="{{ imgUrl }}" mode="aspectFit"></image>
           </view> 
           <view class="sku__header-info">
-            <view>{{ goods.title }}</view>
+            <view class="sku__header-name">{{ goods.title }}</view>
             <view class="sku__header-price">￥{{ price }}</view>
           </view>
           <wxc-icon class="sku__header-close" type="no" size="40" bind:tap="hide"></wxc-icon>
@@ -353,6 +353,7 @@ export default {
   width: 100%;
   background-color: #fff;
   font-size: 28rpx;
+  overflow: visible;
 }
 
 .hairline-bottom::after {
@@ -374,6 +375,7 @@ export default {
   position: relative;
   display: flex;
   padding-left: 30rpx;
+  overflow: visible;
 }
 
 .sku__header-img {
@@ -393,6 +395,14 @@ export default {
 
 .sku__header-price {
   color: #f44;
+}
+
+.sku__header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .sku__header-close {

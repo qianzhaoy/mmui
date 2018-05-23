@@ -84,7 +84,7 @@ export default {
     is_virtual: '0',
     quota_used: 1,
     goods_info: {
-        title: '测试商品',
+        title: '测试商品测试商品测试商品测试商品测试商品测试商品测试商品测试商品测试商品',
         pic_url: 'https://img.yzcdn.cn/upload_files/2017/03/16/Fs_OMbSFPa183sBwvG_94llUYiLa.jpeg?imageView2/2/w/100/h/100/q/75/format/jpg',
         price: 1,
         origin: ''
