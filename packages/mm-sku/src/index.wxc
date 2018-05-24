@@ -168,6 +168,8 @@ export default {
       if (matchedSku && matchedSku.imgUrl) {
         return matchedSku.imgUrl;
       }
+
+      return this.data.goods.pic_url
     },
 
     onSelect: function(e) {
@@ -495,4 +497,9 @@ image {
   width: 100%;
   height: 100%;
 }
+
+view {
+  overflow: visible;
+}
+
 </style>
