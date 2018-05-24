@@ -1,6 +1,6 @@
 {
   "name": "@qianzhaoy/mm-price",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "价格显示 - 小程序组件",
   "main": "dist/index.js",
   "scripts": {},

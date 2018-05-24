@@ -100,12 +100,12 @@
 
             // 小数部分缩小
             case 'small': {
-              value = value.toString().split('.')[0].toString().trim();
+              var smallValue = value.toString().split('.')[0].toString().trim();
               this.setData({
                 decimalNum: (value.toString().split('.')[1] || '00').trim()
               });
               this.setData({
-                smallValue: value
+                smallValue: smallValue
               })
               break
             }
