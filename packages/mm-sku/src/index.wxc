@@ -340,6 +340,10 @@ export default {
       if (!this.isSkuCombSelected(this.data.selectedSku)) {
         return '请选择完整规格';
       }
+
+      if (this.data.quota <= this.data.quotaUsed) {
+        return '您已超过限购数';
+      }
  
       return '';
     }
