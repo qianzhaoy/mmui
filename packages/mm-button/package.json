@@ -1,0 +1,16 @@
+{
+  "name": "mm-button",
+  "version": "1.0.0",
+  "description": "按钮 - 小程序组件",
+  "main": "dist/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qianzhaoy/mmui/tree/master/packages/mm-button"
+  },
+  "author": "",
+  "license": "MIT",
+  "minConfig": {
+    "component": true
+  }
+}
